@@ -323,7 +323,7 @@ set(pcsx2DEV9Sources
 # stub PCAPAdapter) instead, so the real pcap_io.cpp must NOT be compiled there
 # (it references pcap_findalldevs/pcap_open_live/... -> undefined at link, which
 # LTO release builds surface even though a debug build's --gc-sections hides it).
-if(NOT ANDROID)
+if(NOT ANDROID AND NOT IOS)
 	list(APPEND pcsx2DEV9Sources DEV9/pcap_io.cpp)
 endif()
 
@@ -1297,7 +1297,7 @@ if(WIN32)
 		dwmapi.lib
 		OneCore.lib
 	)
-elseif(NOT ANDROID)
+elseif(NOT ANDROID AND NOT IOS)
 	# Android has no system libpcap; DEV9 uses Android/AndroidPcapStubs.cpp instead,
 	# so it must NOT link PCAP::PCAP (a bare else() here caught Android and broke it).
 	target_link_libraries(PCSX2_FLAGS INTERFACE

@@ -227,6 +227,13 @@ endfunction()
 
 function(detect_page_size)
 	message(STATUS "Determining host page size")
+	# Allow cross-compile builds to skip the try_run by pre-setting HOST_PAGE_SIZE
+	# (e.g. -DHOST_PAGE_SIZE=0x1000 for typical 4 KiB ARM64). iOS/simulator are
+	# always cross-compiled, so try_run cannot execute and would FATAL otherwise.
+	if(DEFINED HOST_PAGE_SIZE)
+		message(STATUS "Host page size (preset): ${HOST_PAGE_SIZE}")
+		return()
+	endif()
 	set(detect_page_size_file ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.c)
 	file(WRITE ${detect_page_size_file} "
 #include <stdio.h>
@@ -253,6 +260,12 @@ endfunction()
 
 function(detect_cache_line_size)
 	message(STATUS "Determining host cache line size")
+	# Allow cross-compile builds to skip the try_run by pre-setting
+	# HOST_CACHE_LINE_SIZE (e.g. -DHOST_CACHE_LINE_SIZE=64 for typical ARM64).
+	if(DEFINED HOST_CACHE_LINE_SIZE)
+		message(STATUS "Host cache line size (preset): ${HOST_CACHE_LINE_SIZE}")
+		return()
+	endif()
 	set(detect_cache_line_size_file ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/src.c)
 	file(WRITE ${detect_cache_line_size_file} "
 #include <stdio.h>
