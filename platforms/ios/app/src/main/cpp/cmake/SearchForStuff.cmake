@@ -117,11 +117,14 @@ if(NOT TARGET WebP::libwebp)
 	add_library(WebP::libwebp ALIAS webp)
 endif()
 
-# lz4 (Android-vendored; CMake lives under build/cmake)
+# lz4 (Android-vendored; CMake lives under build/cmake).
+# LZ4_BUILD_* are lz4-specific and safe to FORCE-set. BUILD_SHARED_LIBS /
+# BUILD_STATIC_LIBS are generic globals — use normal (non-CACHE) variables so
+# they only affect this subdirectory scope and don't leak into cubeb/fmt/etc.
 set(LZ4_BUILD_CLI OFF CACHE BOOL "" FORCE)
 set(LZ4_BUILD_LEGACY_LZ4C OFF CACHE BOOL "" FORCE)
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
-set(BUILD_STATIC_LIBS ON CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_STATIC_LIBS ON)
 add_subdirectory("${ARMSX2_ANDROID_VENDORED}/lz4/build/cmake" "${CMAKE_BINARY_DIR}/3rdparty/lz4" EXCLUDE_FROM_ALL)
 if(NOT TARGET LZ4::LZ4)
 	add_library(LZ4::LZ4 ALIAS lz4_static)
@@ -130,7 +133,7 @@ endif()
 # --- Core deps that live in the monorepo root ---
 
 add_subdirectory("${ARMSX2_ROOT}/3rdparty/fast_float" "${CMAKE_BINARY_DIR}/3rdparty/fast_float" EXCLUDE_FROM_ALL)
-add_subdirectory("${ARMSX2_ROOT}/3rdparty/rapidyaml" "${CMAKE_BINARY_DIR}/3rdparty/rapidyaml" EXCLUDE_FROM_ALL)
+add_subdirectory("${ARMSX2_ANDROID_VENDORED}/rapidyaml" "${CMAKE_BINARY_DIR}/3rdparty/rapidyaml" EXCLUDE_FROM_ALL)
 # The monorepo core (common/CMakeLists.txt) links the target as ryml::ryml, but the
 # vendored rapidyaml only exports it as pcsx2-rapidyaml (+ a rapidyaml::rapidyaml
 # ALIAS). Alias to the REAL target -- CMake forbids an ALIAS of an ALIAS.
